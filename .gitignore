@@ -1,2 +1,6 @@
-/node_modules
-package-lock.json
+node_modules
+web_modules
+.firebase
+.firebaserc
+.glitchdotcom.json
+build

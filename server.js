@@ -1,11 +1,13 @@
 const express = require( 'express' );
 const { MongoClient, ObjectId } = require("mongodb");
+const path = require('path');
 const app = express();
-const react = require( "react" )
 
 app.use(express.static("public") );
 app.use(express.static("views") );
-app.use(express.json() );
+app.use(express.static(path.join(__dirname, 'build.js')));
+app.use(express.json());
+
 
 const uri = `mongodb+srv://${process.env.USER}:${process.env.PASS}@${process.env.HOST}/?retryWrites=true&w=majority&appName=Cluster0`;
 const client = new MongoClient( uri )
@@ -31,19 +33,19 @@ app.get('/logout', (req, res) =>{
 
 app.get('/newUser', async(req, res) =>{
   let isNewUser = true
-  const user = await userCollection.findOne({ 'githubProfile.id': req.user });
+  const user = await userCollection.findOne({ 'githubProfile.id':"TEST USER" });
   if(user.isNewUser === undefined)
     isNewUser = false
   else
     await userCollection.updateOne(
-      { 'githubProfile.id': req.user },
+      { 'githubProfile.id': "TEST USER" },
       { $unset: { isNewUser: false } });
   res.json(isNewUser)
 })
 
 app.get('/userdata', async(req, res) =>{
   try{
-    const user = await userCollection.findOne({ 'githubProfile.id': req.user });
+    const user = await userCollection.findOne({ 'githubProfile.id':"TEST USER" });
         
     if(!user)
       return res.status(404).json({ error: "User not found" });
@@ -72,14 +74,14 @@ app.post('/', async(req, res) =>{
   const item = await itemPool.findOne({ itemName : res.body.addIcon });
   
   await userCollection.updateOne(
-    { github: req.user }, 
+    { github: "TEST USER" }, 
     { $addToSet: { inventory: item } });
   await itemPool.deleteOne({ itemName: item.itemName });
   res.status(200).send()
 })
 
 app.get('/getResults', async(req, res) =>{
-  const user = await userCollection.findOne({ 'githubProfile.id': req.user });
+  const user = await userCollection.findOne({ "TEST USER": req.user });
   res.json(user)
 })
 
@@ -100,15 +102,19 @@ app.post('/delItem', async(req, res) =>{
 })
 
 app.post('/changeNumSlots', async(req, res) =>{
-  const user = await userCollection.findOne({ 'githubProfile.id': req.user });
+  const user = await userCollection.findOne({ 'githubProfile.id': "TEST USER" });
   await userCollection.updateOne(
-    { 'githubProfile.id': req.user },
+    { 'githubProfile.id': "TEST USER" },
     { $set: { inventorySlots: req.body.numSlots }})
   res.status(200).send()
 })
 
 app.post('/addIcon', async(req, res) =>{
+  const user = await userCollection.findOne({ 'githubProfile.id': "TEST USER"});
   const item = await itemPool.findOne({ itemName: req.body.addIcon });
+  await userCollection.updateOne(
+    { 'githubProfile.id': "TEST USER" },
+    { $addToSet: { inventory: item } });
   await itemPool.deleteOne({ itemName: req.body.addIcon });
   res.status(200).send()
 })
@@ -118,9 +124,14 @@ app.post('/delIcon', async(req, res) =>{
   const item = await user.inventory.find(item => item.itemName === req.body.delIcon)
   await itemPool.insertOne(item);
   await userCollection.updateOne(
-    { 'githubProfile.id' : req.user }, 
+    { 'githubProfile.id' : "TEST USER" }, 
     { $pull: { inventory: item } });
   res.status(200).send()
+})
+
+app.get('/getInventory', async(req, res) =>{
+  const user = await userCollection.findOne({ 'githubProfile.id':"TEST USER" });
+  res.json( {inventory: user.inventory, inventorySlots: user.inventorySlots })
 })
 
 app.get('/getItemPool', async(req, res) =>{
