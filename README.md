@@ -1,17 +1,6 @@
 ## Inventory Manager
 
-## Component React Exercise
-## Team members:
-- Jayson Caissie
-- Zesheng Chen
-- Shiming De
-
-
-### Hosting link: 
 https://a3-persistence-ycvb.onrender.com/
-
-
-### Instructions:
 
 This project is a simple inventory manager like you would see in a video game. The user clicks items in the resource pool to move them in/out of the inventory. Users can add items to the item pool by typing an object name and it will be displayed in the pool. Valid icons can be found here: https://fontawesome.com/icons. Most things are center justified on this page, but grids were used to organize the items inside the inventory and item pool
 

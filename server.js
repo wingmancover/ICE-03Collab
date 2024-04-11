@@ -1,6 +1,7 @@
 const express = require( 'express' );
 const { MongoClient, ObjectId } = require("mongodb");
 const app = express();
+const react = require( "react" )
 
 app.use(express.static("public") );
 app.use(express.static("views") );
@@ -107,11 +108,7 @@ app.post('/changeNumSlots', async(req, res) =>{
 })
 
 app.post('/addIcon', async(req, res) =>{
-  const user = await userCollection.findOne({ 'githubProfile.id': req.user });
   const item = await itemPool.findOne({ itemName: req.body.addIcon });
-  await userCollection.updateOne(
-    { 'githubProfile.id': req.user },
-    { $addToSet: { inventory: item } });
   await itemPool.deleteOne({ itemName: req.body.addIcon });
   res.status(200).send()
 })
@@ -124,11 +121,6 @@ app.post('/delIcon', async(req, res) =>{
     { 'githubProfile.id' : req.user }, 
     { $pull: { inventory: item } });
   res.status(200).send()
-})
-
-app.get('/getInventory', async(req, res) =>{
-  const user = await userCollection.findOne({ 'githubProfile.id': req.user });
-  res.json( {inventory: user.inventory, inventorySlots: user.inventorySlots })
 })
 
 app.get('/getItemPool', async(req, res) =>{
